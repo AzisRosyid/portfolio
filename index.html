@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Azis Rosyid - Portfolio</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">Azis Rosyid</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="smoothScroll('about')">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="smoothScroll('projects')">Projects</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="smoothScroll('contact')">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section id="about" class="py-5">
+        <div class="container">
+            <div class="row align-items-start">
+                <div class="col-lg-6">
+                    <h2 class="mb-4">About Me</h2>
+                    <p class="lead">
+                        Hi, I'm Your Name, a creative software engineer with a passion for turning ideas into reality.
+                    </p>
+                    <p>
+                        My approach to software development is [mention your development philosophy or unique approach].
+                        I enjoy collaborating with cross-functional teams and solving complex problems with elegant solutions.
+                    </p>
+                    <p>
+                        Let's embark on a journey to create exceptional software that not only meets but exceeds expectations.
+                        I'm excited to bring my skills and enthusiasm to your next project!
+                    </p>
+                    <div class="social-links">
+                        <!-- Add your social media icons or links here -->
+                        <a href="YOUR_LINKEDIN_PROFILE" class="text-dark me-3" target="_blank"><i class="bi bi-linkedin"></i></a>
+                        <a href="YOUR_GITHUB_PROFILE" class="text-dark me-3" target="_blank"><i class="bi bi-github"></i></a>
+                        <a href="mailto:your.email@example.com" class="text-dark"><i class="bi bi-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="images/profile.jpg" alt="Your Name" class="img-fluid rounded mb-4  shadow">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="projects">
+        <div class="container">
+            <h2 class="mb-4">Projects</h2>
+            <div class="row">
+                <!-- Project 1 -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow">
+                        <img src="images/project1.png" class="card-img-top" alt="Project 1 Image">
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title mb-3">Game Planet AR (Semester 2)</h3>
+                            <p class="card-text mb-3">Game yang merupakan output dari kegiatan PPM di SMK Negeri 2 Pakem. Saya berkontribusi dalam merancang dan membuat sistem game menggunakan game engine Unity secara keseluruhan dengan anggota tim lain yang menysuplai asset game kepada saya.</p>
+                            <a href="https://drive.google.com/drive/folders/1AHcx-PG9zbxuQDjZl-7TZxqqKWP-BDHK?usp=sharing" target="_blank" class="btn btn-dark mt-auto">View Project</a>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Project 2 -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow">
+                        <img src="images/project2.png" class="card-img-top" alt="Project 1 Image">
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title mb-3">E-Mathematics Aptitude Test (Semester 2)</h3>
+                            <p class="card-text mb-3">Website yang digunakan untuk melakukan test matematika kepada peserta didik sebagai output disertasi client. Saya berpertan untuk mengkonfigurasi back-end termasuk database menggunakan framework CodeIgniter 4 secara keseluruhan.</p>
+                            <a href="https://github.com/AzisRosyid/cbt-project" target="_blank" class="btn btn-dark mt-auto">View Project</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow">
+                        <img src="images/project3.png" class="card-img-top" alt="Project 1 Image">
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title mb-3">Panenku Indonesia (Semester 3)</h3>
+                            <p class="card-text mb-3">Website yang digunakan untuk menfasilitasi transaksi kemitraan pada budidaya jamur tiram sebagai output project pkm client. Saya berkontribusi dalam mengkonfigurasi back-end fitur utama, yaitu transaksi kemitraan dan dashboard. Juga mengkonfigurasi database website dan manajemen web server.</p>
+                            <a href="https://panenkuindonesia.com/" target="_blank" class="btn btn-dark mt-auto">View Project</a>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow">
+                        <img src="images/project4.png" class="card-img-top" alt="Project 4 Image">
+                        <div class="card-body">
+                            <h3 class="card-title">Edu MIT (Semester 3)</h3>
+                            <p class="card-text">Aplikasi mobile pada platform android yang digunakan untuk mengedukasi masyarakat dalam hal mitigasi bencana gunung merapi. Saya bertanggung jawab memimpin jalannya project dan menghandle aplikasi mobile secara keseluruhan menggunakan flutter. Desain dan Asset dihandle oleh anggota tim.</p>
+                            <a href="https://play.google.com/store/apps/details?id=com.edumit.app_mitigasi_bencana" target="_blank" class="btn btn-dark">View Project</a>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow">
+                        <img src="images/project5.png" class="card-img-top" alt="Project 5 Image">
+                        <div class="card-body">
+                            <h3 class="card-title">Qwhizy (Semester 3)</h3>
+                            <p class="card-text">Aplikasi mobile pada platform android yang digunakan untuk membantu hafalan Al Quran. Project aplikasi ini diketuai oleh Mas Apry dan berhasil menjuarai ajang kompetisi dengan posisi ke 2. Saya berkontribusi pada pembuatan aplikasi mobile menggunakan flutter dan membuat API untuk login dan register aplikasi menggunakan framework Laravel.</p>
+                            <a href="https://play.google.com/store/apps/details?id=com.qwhizy.mdaq" target="_blank" class="btn btn-dark">View Project</a>
+                        </div>
+                    </div>
+                </div>
+    
+            </div>
+        </div>
+    </section>
+
+    <!-- element 1 -->
+    <div class="svg-top" style=" background: linear-gradient(to bottom, transparent 0%, transparent 90%, #212529 10%, #212529 100%);">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="#212529" fill-opacity="100000"
+                d="M0,256L60,256C120,256,240,256,360,240C480,224,600,192,720,186.7C840,181,960,203,1080,218.7C1200,235,1320,245,1380,250.7L1440,256L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
+            </path>
+        </svg>
+    </div>
+    <!-- element 2 -->
+    <section id="contact" class="bg-light text-light py-5" style="background-color: #212529!important;">
+        <div class="container">
+            <div class="row mb-4 text-center">
+                <div class="col">
+                    <h2>Contact Me</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form method="post" action="mailto:someone@example.com">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="name"
+                                aria-describedby="name"
+                                name="first_name"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="email"
+                                aria-describedby="emailHelp"
+                                name="email_address"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea
+                                class="form-control"
+                                id="message"
+                                rows="3"
+                                name="comments"
+                            ></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-dark btn-outline-light">
+                            Send
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="bg-dark text-light text-center py-3">
+        <div class="container">
+            <p>&copy; 2023 Azis Rosyid</p>
+        </div>
+    </footer>
+    <canvas id="canvas"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="js/script.js"></script>
+</html>
