@@ -13,6 +13,49 @@ function toggleNav() {
     navbarLinks.style.display = (navbarLinks.style.display === 'flex') ? 'none' : 'flex';
 }
 
+function setLanguage(lang) {
+    // Save selected language to local storage
+    localStorage.setItem('language', lang);
+
+    // Translate all static text elements
+    document.querySelectorAll('[data-lang-key]').forEach(elem => {
+        const key = elem.getAttribute('data-lang-key');
+        if (translations[lang] && translations[lang][key]) {
+            elem.innerText = translations[lang][key];
+        }
+    });
+
+    // Re-render the projects section with the correct language
+    renderProjects(lang);
+}
+
+
+function renderProjects(lang) {
+    const projectsGrid = document.getElementById('projects-grid');
+    if (!projectsGrid) return;
+
+    const projectData = lang === 'id' ? projectsData_id : projectsData_en;
+    const viewProjectText = translations[lang].project_button;
+
+    // Clear existing content
+    projectsGrid.innerHTML = '';
+
+    // Loop through data and generate cards
+    projectData.forEach(project => {
+        const projectCard = `
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full transform hover:scale-105 transition-transform duration-300">
+                        <img src="${project.imageUrl}" class="w-full h-48 object-cover" alt="${project.title} Image">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="text-xl font-semibold mb-2 text-gray-900">${project.title}</h3>
+                            <p class="text-gray-600 text-base mb-4 flex-grow">${project.description}</p>
+                            <a href="${project.projectUrl}" target="_blank" class="bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 transition-colors mt-auto text-center inline-block">${viewProjectText}</a>
+                        </div>
+                    </div>
+                `;
+        projectsGrid.innerHTML += projectCard;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');

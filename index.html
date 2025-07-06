@@ -1,223 +1,679 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS for canvas background */
+        body {
+            margin: 0;
+            background-color: #111827;
+            /* Fallback background, matches bg-gray-900 */
+        }
+
+        #about,
+        #projects,
+        #contact {
+            position: relative;
+            z-index: 1;
+        }
+
+        #canvas {
+            position: fixed;
+            /* Use fixed to cover the whole viewport */
+            top: 0;
+            left: 0;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Additional custom styles */
+        .social-icon {
+            width: 2rem;
+            /* 32px */
+            height: 2rem;
+            /* 32px */
+            transition: transform 0.2s;
+        }
+
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Simple Dropdown Styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #2d3748;
+            /* bg-gray-700 */
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            border-radius: 0.5rem;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #4a5568;
+            /* bg-gray-600 */
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Custom select arrow */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236B7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right .7em top 50%;
+            background-size: .65em auto;
+            padding-right: 2.5em;
+        }
+
+        /* Carousel Styles */
+        .carousel-container {
+            position: relative;
+            max-width: 900px;
+            margin: auto;
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+
+        .carousel-slide {
+            display: none;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+
+        .carousel-prev,
+        .carousel-next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .carousel-next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .carousel-prev:hover,
+        .carousel-next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+    </style>
     <title>Azis Rosyid - Portfolio</title>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <a class="navbar-brand" href="#">Azis Rosyid</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="smoothScroll('about')">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="smoothScroll('projects')">Projects</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="smoothScroll('contact')">Contact</a>
-                        </li>
-                    </ul>
+
+<body class="bg-gray-900 text-gray-300 font-sans">
+
+    <canvas id="canvas"></canvas>
+
+    <header class="bg-gray-800/70 backdrop-blur-lg text-white sticky top-0 z-30">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a class="text-2xl font-bold" href="#">Azis Rosyid</a>
+            <button id="menu-button" class="md:hidden block text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
+                    </path>
+                </svg>
+            </button>
+            <div class="hidden md:flex md:items-center space-x-8" id="navbarNav">
+                <ul class="flex flex-col md:flex-row md:space-x-8 mt-4 md:mt-0 text-lg">
+                    <li><a data-lang-key="nav_about" class="block py-2 md:py-0 hover:text-blue-400 transition-colors"
+                            href="#" onclick="showMainContent(); smoothScroll('about');">About</a></li>
+                    <li><a data-lang-key="nav_projects" class="block py-2 md:py-0 hover:text-blue-400 transition-colors"
+                            href="#" onclick="showMainContent(); smoothScroll('projects');">Projects</a></li>
+                    <li><a data-lang-key="nav_contact" class="block py-2 md:py-0 hover:text-blue-400 transition-colors"
+                            href="#" onclick="showMainContent(); smoothScroll('contact');">Contact</a></li>
+                </ul>
+                <div class="dropdown ml-4">
+                    <button class="flex items-center text-white bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-md">
+                        <span data-lang-key="language">Language</span>
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="setLanguage('id'); return false;">Bahasa Indonesia</a>
+                        <a href="#" onclick="setLanguage('en'); return false;">English</a>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <section id="about" class="py-5">
-        <div class="container">
-            <div class="row align-items-start">
-                <div class="col-lg-6">
-                    <h2 class="mb-4">About Me</h2>
-                    <p class="lead">
-                        Hi, my name is Azis Rosyid. Dedicated student with a passion for technology, particularly in the realm of software engineering. Demonstrated expertise and hands-on experience in leveraging technology to solve complex problems. 
-                    </p>
-                    <p>
-                        Like to participating in scientific writing competitions, showcasing a strong commitment to academic and intellectual pursuits. Eager to contribute technical skills and innovative thinking to a dynamic team or project. Aspiring professional with a keen interest in staying at the forefront of technological advancements.
-                    </p>
-                    <p>
-                        Let's embark on a journey to create exceptional software that not only meets but exceeds expectations.
-                        I'm excited to bring my skills and enthusiasm to your next project!
-                    </p>
-                    <div class="social-links">
-                        <!-- Add your social media icons or links here -->
-                        <a href="https://github.com/AzisRosyid?tab=repositories" class="text-dark me-3" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 30 30">
-                            <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"></path>
-                        </svg></a>
-                        <a href="https://www.linkedin.com/in/azis-rosyid-30628a215/recent-activity/all/" class="text-dark me-3" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
-                            <path fill="#0078d4" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5	V37z"></path><path d="M30,37V26.901c0-1.689-0.819-2.698-2.192-2.698c-0.815,0-1.414,0.459-1.779,1.364	c-0.017,0.064-0.041,0.325-0.031,1.114L26,37h-7V18h7v1.061C27.022,18.356,28.275,18,29.738,18c4.547,0,7.261,3.093,7.261,8.274	L37,37H30z M11,37V18h3.457C12.454,18,11,16.528,11,14.499C11,12.472,12.478,11,14.514,11c2.012,0,3.445,1.431,3.486,3.479	C18,16.523,16.521,18,14.485,18H18v19H11z" opacity=".05"></path><path d="M30.5,36.5v-9.599c0-1.973-1.031-3.198-2.692-3.198c-1.295,0-1.935,0.912-2.243,1.677	c-0.082,0.199-0.071,0.989-0.067,1.326L25.5,36.5h-6v-18h6v1.638c0.795-0.823,2.075-1.638,4.238-1.638	c4.233,0,6.761,2.906,6.761,7.774L36.5,36.5H30.5z M11.5,36.5v-18h6v18H11.5z M14.457,17.5c-1.713,0-2.957-1.262-2.957-3.001	c0-1.738,1.268-2.999,3.014-2.999c1.724,0,2.951,1.229,2.986,2.989c0,1.749-1.268,3.011-3.015,3.011H14.457z" opacity=".07"></path><path fill="#fff" d="M12,19h5v17h-5V19z M14.485,17h-0.028C12.965,17,12,15.888,12,14.499C12,13.08,12.995,12,14.514,12	c1.521,0,2.458,1.08,2.486,2.499C17,15.887,16.035,17,14.485,17z M36,36h-5v-9.099c0-2.198-1.225-3.698-3.192-3.698	c-1.501,0-2.313,1.012-2.707,1.99C24.957,25.543,25,26.511,25,27v9h-5V19h5v2.616C25.721,20.5,26.85,19,29.738,19	c3.578,0,6.261,2.25,6.261,7.274L36,36L36,36z"></path>
-                            </svg></a>
-                        <a href="mailto:azisrosyid.2022@gmail.com" class="text-dark"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
-                            <path fill="#4caf50" d="M45,16.2l-5,2.75l-5,4.75L35,40h7c1.657,0,3-1.343,3-3V16.2z"></path><path fill="#1e88e5" d="M3,16.2l3.614,1.71L13,23.7V40H6c-1.657,0-3-1.343-3-3V16.2z"></path><polygon fill="#e53935" points="35,11.2 24,19.45 13,11.2 12,17 13,23.7 24,31.95 35,23.7 36,17"></polygon><path fill="#c62828" d="M3,12.298V16.2l10,7.5V11.2L9.876,8.859C9.132,8.301,8.228,8,7.298,8h0C4.924,8,3,9.924,3,12.298z"></path><path fill="#fbc02d" d="M45,12.298V16.2l-10,7.5V11.2l3.124-2.341C38.868,8.301,39.772,8,40.702,8h0 C43.076,8,45,9.924,45,12.298z"></path>
-                            </svg></a>
-                    </div>
-                </div>
-                <div class="col-lg-6 text-center">
-                    <img src="images/profile.jpg" alt="Your Name" class="img-fluid rounded mb-4  shadow">
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section id="projects">
-        <div class="container">
-            <h2 class="mb-4">Projects</h2>
-            <div class="row">
-                <!-- Project 1 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <img src="images/project1.png" class="card-img-top" alt="Project 1 Image">
-                        <div class="card-body d-flex flex-column">
-                            <h3 class="card-title mb-3">Game Planet AR (Semester 2)</h3>
-                            <p class="card-text mb-3">Game yang merupakan output dari kegiatan PPM di SMK Negeri 2 Pakem. Saya berkontribusi dalam merancang dan membuat sistem game menggunakan game engine Unity secara keseluruhan dengan anggota tim lain yang menyuplai asset game kepada saya.</p>
-                            <a href="https://drive.google.com/drive/folders/1AHcx-PG9zbxuQDjZl-7TZxqqKWP-BDHK?usp=sharing" target="_blank" class="btn btn-dark mt-auto">View Project</a>
+    <div id="main-content">
+        <main>
+            <section id="about" class="pt-20 pb-10">
+                <div class="container mx-auto px-6">
+                    <div class="flex flex-wrap items-center -mx-4">
+                        <div class="w-full lg:w-1/2 px-4 mb-10 lg:mb-0">
+                            <h2 data-lang-key="about_title" class="text-4xl font-bold mb-6 text-white">About Me</h2>
+                            <p data-lang-key="about_p1" class="text-xl text-gray-300 mb-4"></p>
+                            <p data-lang-key="about_p2" class="text-gray-400 mb-4"></p>
+                            <p data-lang-key="about_p3" class="text-gray-400 mb-4"></p>
+                            <div class="flex items-center space-x-4 mt-6">
+                                <a href="https://github.com/AzisRosyid?tab=repositories"
+                                    class="text-gray-300 hover:text-white" target="_blank" title="GitHub"><svg
+                                        class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"
+                                        fill="currentColor">
+                                        <path
+                                            d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z">
+                                        </path>
+                                    </svg></a>
+                                <a href="https://www.linkedin.com/in/azis-rosyid-30628a215/recent-activity/all/"
+                                    class="text-gray-300 hover:text-white" target="_blank" title="LinkedIn"><svg
+                                        class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                                        <path fill="#0078d4"
+                                            d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z">
+                                        </path>
+                                        <path fill="#fff"
+                                            d="M12,19h5v17h-5V19z M14.485,17h-0.028C12.965,17,12,15.888,12,14.499C12,13.08,12.995,12,14.514,12 c1.521,0,2.458,1.08,2.486,2.499C17,15.887,16.035,17,14.485,17z M36,36h-5v-9.099c0-2.198-1.225-3.698-3.192-3.698 c-1.501,0-2.313,1.012-2.707,1.99C24.957,25.543,25,26.511,25,27v9h-5V19h5v2.616C25.721,20.5,26.85,19,29.738,19 c3.578,0,6.261,2.25,6.261,7.274L36,36L36,36z">
+                                        </path>
+                                    </svg></a>
+                                <a href="mailto:azisrosyid.2022@gmail.com" class="text-gray-300 hover:text-white"
+                                    title="Email"><svg class="social-icon" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 48 48">
+                                        <path fill="#4caf50"
+                                            d="M45,16.2l-5,2.75l-5,4.75L35,40h7c1.657,0,3-1.343,3-3V16.2z"></path>
+                                        <path fill="#1e88e5"
+                                            d="M3,16.2l3.614,1.71L13,23.7V40H6c-1.657,0-3-1.343-3-3V16.2z"></path>
+                                        <polygon fill="#e53935"
+                                            points="35,11.2 24,19.45 13,11.2 12,17 13,23.7 24,31.95 35,23.7 36,17">
+                                        </polygon>
+                                        <path fill="#c62828"
+                                            d="M3,12.298V16.2l10,7.5V11.2L9.876,8.859C9.132,8.301,8.228,8,7.298,8h0C4.924,8,3,9.924,3,12.298z">
+                                        </path>
+                                        <path fill="#fbc02d"
+                                            d="M45,12.298V16.2l-10,7.5V11.2l3.124-2.341C38.868,8.301,39.772,8,40.702,8h0 C43.076,8,45,9.924,45,12.298z">
+                                        </path>
+                                    </svg></a>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-1/2 px-4 text-center">
+                            <img src="https://azisrosyid.github.io/portfolio/images/profile.jpg" alt="Azis Rosyid"
+                                class="max-w-full h-auto rounded-3xl shadow-lg mx-auto" style="max-width: 400px;">
                         </div>
                     </div>
                 </div>
-    
-                <!-- Project 2 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <img src="images/project2.png" class="card-img-top" alt="Project 2 Image">
-                        <div class="card-body d-flex flex-column">
-                            <h3 class="card-title mb-3">E-Mathematics Aptitude Test (Semester 2)</h3>
-                            <p class="card-text mb-3">Website yang digunakan untuk melakukan test matematika kepada peserta didik sebagai output disertasi client. Saya berperan untuk mengkonfigurasi back-end termasuk database menggunakan framework CodeIgniter 4 secara keseluruhan.</p>
-                            <a href="https://github.com/AzisRosyid/cbt-project" target="_blank" class="btn btn-dark mt-auto">View Project</a>
-                        </div>
-                    </div>
-                </div>
+            </section>
 
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <img src="images/project3.png" class="card-img-top" alt="Project 3 Image">
-                        <div class="card-body d-flex flex-column">
-                            <h3 class="card-title mb-3">Panenku Indonesia (Semester 3)</h3>
-                            <p class="card-text mb-3">Website yang digunakan untuk menfasilitasi transaksi kemitraan pada budidaya jamur tiram sebagai output project pkm client. Saya berkontribusi dalam mengkonfigurasi back-end fitur utama, yaitu transaksi kemitraan dan dashboard. Juga mengkonfigurasi database website dan manajemen web server.</p>
-                            <a href="https://panenkuindonesia.com/" target="_blank" class="btn btn-dark mt-auto">View Project</a>
+            <section id="projects" class="py-20 bg-gray-100 z-10 relative">
+                <div class="container mx-auto px-6">
+                    <h2 data-lang-key="projects_title" class="text-4xl font-bold mb-8 text-center text-gray-800">
+                        Projects</h2>
+                    <div class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div><input type="text" id="search-bar" data-lang-placeholder="search_placeholder"
+                                class="w-full p-3 rounded-lg bg-white text-gray-700 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Search projects..."></div>
+                        <div><select id="filter-select"
+                                class="w-full p-3 rounded-lg bg-white text-gray-700 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"></select>
+                        </div>
+                        <div><select id="sort-select"
+                                class="w-full p-3 rounded-lg bg-white text-gray-700 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"></select>
                         </div>
                     </div>
+                    <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+                    <div id="no-projects-message" class="hidden text-center text-gray-500 py-10">
+                        <p data-lang-key="no_projects_found"></p>
+                    </div>
                 </div>
+            </section>
 
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <img src="images/project4.png" class="card-img-top" alt="Project 4 Image">
-                        <div class="card-body d-flex flex-column">
-                            <h3 class="card-title mb-3">Edu MIT (Semester 3)</h3>
-                            <p class="card-text mb-3">Aplikasi mobile pada platform android yang digunakan untuk mengedukasi masyarakat dalam hal mitigasi bencana gunung merapi. Saya bertanggung jawab memimpin jalannya project dan menghandle aplikasi mobile secara keseluruhan menggunakan Flutter. Desain dan Asset dihandle oleh anggota tim.</p>
-                            <a href="https://play.google.com/store/apps/details?id=com.edumit.app_mitigasi_bencana" target="_blank" class="btn btn-dark mt-auto">View Project</a>
-                        </div>
-                    </div>
-                </div>
+            <div class="text-gray-800 leading-none"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                    <path fill="currentColor" fill-opacity="1"
+                        d="M0,256L60,256C120,256,240,256,360,240C480,224,600,192,720,186.7C840,181,960,203,1080,218.7C1200,235,1320,245,1380,250.7L1440,256L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
+                    </path>
+                </svg></div>
 
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <img src="images/project5.png" class="card-img-top" alt="Project 4 Image">
-                        <div class="card-body d-flex flex-column">
-                            <h3 class="card-title mb-3">Qwhizy (Semester 3)</h3>
-                            <p class="card-text mb-3">Aplikasi mobile pada platform android yang digunakan untuk membantu hafalan Al Quran. Project aplikasi ini dibuat untuk mengikuti ajang kompetisi client dan berhasil menjuarai ajang tersebut dengan posisi ke 2. Saya berkontribusi pada pembuatan aplikasi mobile menggunakan Flutter secara keseluruhan dan membuat API untuk login dan register aplikasi menggunakan framework Laravel.</p>
-                            <a href="https://play.google.com/store/apps/details?id=com.qwhizy.mdaq" target="_blank" class="btn btn-dark mt-auto">View Project</a>
+            <section id="contact" class="bg-gray-800 text-gray-200 py-20">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 data-lang-key="contact_title" class="text-4xl font-bold text-white">Contact Me</h2>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="w-full max-w-2xl">
+                            <form method="post" action="mailto:azisrosyid.2022@student.uny.ac.id" enctype="text/plain">
+                                <div class="mb-4"><label for="name" data-lang-key="form_name"
+                                        class="block text-gray-300 text-sm font-bold mb-2">Name</label><input
+                                        type="text" id="name" name="name"
+                                        class="shadow appearance-none border rounded w-full py-3 px-4 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 border-gray-600"
+                                        required></div>
+                                <div class="mb-4"><label for="email" data-lang-key="form_email"
+                                        class="block text-gray-300 text-sm font-bold mb-2">Email</label><input
+                                        type="email" id="email" name="email"
+                                        class="shadow appearance-none border rounded w-full py-3 px-4 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 border-gray-600"
+                                        required></div>
+                                <div class="mb-6"><label for="message" data-lang-key="form_message"
+                                        class="block text-gray-300 text-sm font-bold mb-2">Message</label><textarea
+                                        id="message" name="message" rows="4"
+                                        class="shadow appearance-none border rounded w-full py-3 px-4 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 border-gray-600"
+                                        required></textarea></div>
+                                <div class="text-center"><button data-lang-key="form_send" type="submit"
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full focus:outline-none focus:shadow-outline transition-colors">Send
+                                        Message</button></div>
+                            </form>
                         </div>
                     </div>
                 </div>
-    
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <img src="images/project6.png" class="card-img-top" alt="Project 4 Image">
-                        <div class="card-body d-flex flex-column">
-                            <h3 class="card-title mb-3">Toll interchange-ED (Semester 3)</h3>
-                            <p class="card-text mb-3">Aplikasi mobile pada platform android yang digunakan untuk mengedukasi pelajar SMK khususnya bidang DPIB (Desain Pemodelan dan Informasi Bangunan) pada materi perancangan geometri lengkung pada interchange jalan tol menggunakan parameter kecepatan rencana dan daerah bebas samping pada tikungan. Saya berperan dalam mengembangkan aplikasi secara keseluruhan menggunakan Flutter dengan panduan dari Ibu Ety Dwiastuti untuk keperluan Tesis Program Studi Magister Pendidikan Fisika Fakultas Keguruan dan Ilmu Pendidikan Universitas Ahmad Dahlan Yogyakarta</p>
-                            <a href="#" target="_blank" class="btn btn-dark mt-auto">View Project</a>
-                        </div>
-                    </div>
-                </div>
-
-                    
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <img src="images/project7.png" class="card-img-top" alt="Project 4 Image">
-                        <div class="card-body d-flex flex-column">
-                            <h3 class="card-title mb-3">Royal Photoshare (Semester 4)</h3>
-                            <p class="card-text mb-3">Aplikasi mobile pada platform android yang digunakan untuk membantu usaha fotografi "Royal Artwork" dalam memudahkan dan meningkatkan efisiensi. Aplikasi ini memiliki 2 fitur utama, yaitu melakukan edit gambar overlay secara otomatis dan synchronize secara otomatis ke Google Drive. Aplikasi ini dirancang secara eksklusif kepada usaha fotografi "Royal Artwork Yogyakarta". Pada project ini, saya berperan dalam pengembangan aplikasi secara keseluruhan (UI dan Sistem) menggunakan Flutter.</p>
-                            <a href="#" target="_blank" class="btn btn-dark mt-auto">View Project</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- element 1 -->
-    <div class="svg-top" style=" background: linear-gradient(to bottom, transparent 0%, transparent 90%, #212529 10%, #212529 100%);">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-            <path fill="#212529" fill-opacity="100000"
-                d="M0,256L60,256C120,256,240,256,360,240C480,224,600,192,720,186.7C840,181,960,203,1080,218.7C1200,235,1320,245,1380,250.7L1440,256L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
-            </path>
-        </svg>
+            </section>
+        </main>
     </div>
-    <!-- element 2 -->
-    <section id="contact" class="bg-light text-light py-5" style="background-color: #212529!important;">
-        <div class="container">
-            <div class="row mb-4 text-center">
-                <div class="col">
-                    <h2>Contact Me</h2>
+
+    <!-- Project Detail View -->
+    <section id="project-detail" class="hidden py-20 bg-gray-100 z-20 relative">
+        <div class="container mx-auto px-6">
+            <button onclick="showMainContent()" data-lang-key="back_to_projects"
+                class="mb-8 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg inline-flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Projects
+            </button>
+
+            <!-- Carousel -->
+            <div id="carousel-container" class="carousel-container mb-8 shadow-lg"></div>
+
+            <div class="bg-white p-8 rounded-lg shadow-lg text-gray-800">
+                <h2 id="detail-title" class="text-4xl font-bold mb-4"></h2>
+
+                <div class="flex flex-wrap items-center gap-2 mb-6">
+                    <span class="font-bold" data-lang-key="detail_type">Type:</span>
+                    <div id="detail-types" class="flex flex-wrap gap-2"></div>
                 </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <form method="post" action="mailto:someone@example.com">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="name"
-                                aria-describedby="name"
-                                name="first_name"
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input
-                                type="email"
-                                class="form-control"
-                                id="email"
-                                aria-describedby="emailHelp"
-                                name="email_address"
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label for="message" class="form-label">Message</label>
-                            <textarea
-                                class="form-control"
-                                id="message"
-                                rows="3"
-                                name="comments"
-                            ></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-dark btn-outline-light">
-                            Send
-                        </button>
-                    </form>
+
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold mb-2" data-lang-key="detail_skills">Skills</h3>
+                    <div id="detail-skills" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold mb-2" data-lang-key="detail_period">Project Period</h3>
+                    <p id="detail-period"></p>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold mb-2" data-lang-key="detail_contribution">My Contribution</h3>
+                    <p id="detail-contribution"></p>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold mb-2" data-lang-key="detail_description">Description</h3>
+                    <p id="detail-description"></p>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold mb-2" data-lang-key="detail_assets">Project Assets</h3>
+                    <div id="detail-assets" class="flex flex-wrap gap-4"></div>
                 </div>
             </div>
         </div>
     </section>
-    
-    <footer class="bg-dark text-light text-center py-3">
-        <div class="container">
-            <p>&copy; 2023 Azis Rosyid</p>
+
+    <footer class="bg-gray-900 text-gray-400 text-center py-6">
+        <div class="container mx-auto">
+            <p>&copy; 2025 Azis Rosyid</p>
         </div>
     </footer>
-    <canvas id="canvas"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <script src="js/script.js"></script>
+    <script>
+        // =================================================================
+        // models.js
+        // =================================================================
+        const ProjectType = { GAME: 'Game', MOBILE_APP: 'Mobile App', WEB_APP: 'Web App', AI: 'Artificial Intelligence', BACKEND: 'Backend' };
+
+        class Project {
+            constructor(id, imageUrls, title, description, period, contribution, assets, types = [], skills = []) {
+                this.id = id;
+                this.imageUrls = imageUrls;
+                this.title = title;
+                this.description = description;
+                this.period = period;
+                this.contribution = contribution;
+                this.assets = assets;
+                this.types = types;
+                this.skills = skills;
+            }
+        }
+
+        // =================================================================
+        // data.js
+        // =================================================================
+        const projectsData_id = [
+            new Project('p1', ['https://azisrosyid.github.io/portfolio/images/project1.png'], 'Game Planet AR (Semester 2)', 'Game yang merupakan output dari kegiatan PPM di SMK Negeri 2 Pakem. Saya berkontribusi dalam merancang dan membuat sistem game menggunakan game engine Unity secara keseluruhan dengan anggota tim lain yang menyuplai asset game kepada saya.', 'Semester 2, 2023', 'Merancang dan membuat sistem game menggunakan game engine Unity secara keseluruhan.', [{ name: 'Google Drive', url: 'https://drive.google.com/drive/folders/1AHcx-PG9zbxuQDjZl-7TZxqqKWP-BDHK?usp=sharing' }], [ProjectType.GAME, ProjectType.MOBILE_APP], ['Unity', 'C#']),
+            new Project('p2', ['https://azisrosyid.github.io/portfolio/images/project2.png'], 'E-Mathematics Aptitude Test (Semester 2)', 'Website yang digunakan untuk melakukan test matematika kepada peserta didik sebagai output disertasi client. Saya berperan untuk mengkonfigurasi back-end termasuk database menggunakan framework CodeIgniter 4 secara keseluruhan.', 'Semester 2, 2023', 'Mengkonfigurasi back-end termasuk database menggunakan framework CodeIgniter 4 secara keseluruhan.', [{ name: 'GitHub', url: 'https://github.com/AzisRosyid/cbt-project' }], [ProjectType.WEB_APP, ProjectType.BACKEND], ['CodeIgniter 4', 'PHP', 'MySQL', 'JavaScript']),
+            new Project('p3', ['https://azisrosyid.github.io/portfolio/images/project3.png'], 'Panenku Indonesia (Semester 3)', 'Website yang digunakan untuk menfasilitasi transaksi kemitraan pada budidaya jamur tiram sebagai output project pkm client. Saya berkontribusi dalam mengkonfigurasi back-end fitur utama, yaitu transaksi kemitraan dan dashboard. Juga mengkonfigurasi database website dan manajemen web server.', 'Semester 3, 2023', 'Mengkonfigurasi back-end (transaksi, dashboard), database, dan manajemen web server.', [{ name: 'Website', url: 'https://panenkuindonesia.com/' }], [ProjectType.WEB_APP, ProjectType.BACKEND], ['Laravel', 'PHP', 'MySQL', 'Bootstrap']),
+            new Project('p4', ['https://azisrosyid.github.io/portfolio/images/project4.png'], 'Edu MIT (Semester 3)', 'Aplikasi mobile pada platform android yang digunakan untuk mengedukasi masyarakat dalam hal mitigasi bencana gunung merapi. Saya bertanggung jawab memimpin jalannya project dan menghandle aplikasi mobile secara keseluruhan menggunakan Flutter. Desain dan Asset dihandle oleh anggota tim.', 'Semester 3, 2023', 'Memimpin project dan mengembangkan aplikasi mobile menggunakan Flutter.', [{ name: 'Google Play', url: 'https://play.google.com/store/apps/details?id=com.edumit.app_mitigasi_bencana' }], [ProjectType.MOBILE_APP], ['Flutter', 'Dart']),
+            new Project('p5', ['https://azisrosyid.github.io/portfolio/images/project5.png'], 'Qwhizy (Semester 3)', 'Aplikasi mobile pada platform android yang digunakan untuk membantu hafalan Al Quran. Project aplikasi ini dibuat untuk mengikuti ajang kompetisi client dan berhasil menjuarai ajang tersebut dengan posisi ke 2. Saya berkontribusi pada pembuatan aplikasi mobile menggunakan Flutter secara keseluruhan dan membuat API untuk login dan register aplikasi menggunakan framework Laravel.', 'Semester 3, 2023', 'Pengembangan aplikasi mobile (Flutter) dan API (Laravel).', [{ name: 'Google Play', url: 'https://play.google.com/store/apps/details?id=com.qwhizy.mdaq' }], [ProjectType.MOBILE_APP, ProjectType.BACKEND], ['Flutter', 'Dart', 'Laravel', 'PHP']),
+            new Project('p6', ['https://azisrosyid.github.io/portfolio/images/project6.png'], 'Toll interchange-ED (Semester 3)', 'Aplikasi mobile pada platform android yang digunakan untuk mengedukasi pelajar SMK khususnya bidang DPIB pada materi perancangan geometri lengkung pada interchange jalan tol. Saya berperan dalam mengembangkan aplikasi secara keseluruhan menggunakan Flutter.', 'Semester 3, 2023', 'Pengembangan aplikasi secara keseluruhan menggunakan Flutter.', [], [ProjectType.MOBILE_APP], ['Flutter', 'Dart']),
+            new Project('p7', ['https://azisrosyid.github.io/portfolio/images/project7.png'], 'Royal Photoshare (Semester 4)', 'Aplikasi mobile pada platform android yang digunakan untuk membantu usaha fotografi "Royal Artwork" dalam memudahkan dan meningkatkan efisiensi. Aplikasi ini dirancang secara eksklusif kepada usaha fotografi "Royal Artwork Yogyakarta". Saya berperan dalam pengembangan aplikasi secara keseluruhan menggunakan Flutter.', 'Semester 4, 2024', 'Pengembangan aplikasi secara keseluruhan (UI dan Sistem) menggunakan Flutter.', [], [ProjectType.MOBILE_APP], ['Flutter', 'Dart']),
+            new Project('p8', ['https://placehold.co/900x500/1f2937/ffffff?text=WalletWatch+UI'], 'Wallet Watch (PKM-KC 2024)', 'Aplikasi mobile untuk mengontrol penggunaan paylater dengan memanfaatkan machine learning untuk membantu masyarakat agar lebih bijak dan sadar dalam penggunaannya.', 'April - Juli 2024', 'Sebagai AI Engineer, saya mengembangkan aplikasi mobile Wallet Watch secara keseluruhan menggunakan Flutter, merancang, mengolah data training, dan mengembangkan model machine learning Self-Discovery dan Automatic Self-Control (Monitor). Selain itu, saya membantu melakukan fine-tuning pada fitur ChatBot, dan berperan sebagai Teknisi, Pengembang Sistem, pembuat Flowchart Sistem, serta melakukan Pengujian Sistem.', [{ name: 'Google Play', url: '#' }], [ProjectType.MOBILE_APP, ProjectType.AI, ProjectType.BACKEND], ['Flutter', 'Dart', 'Python', 'Scikit-learn', 'Laravel', 'PHP', 'OpenAI API', 'Docker', 'Kubernetes'])
+        ];
+
+        const projectsData_en = [
+            new Project('p1', ['https://azisrosyid.github.io/portfolio/images/project1.png'], 'Game Planet AR (2nd Semester)', 'A game that was the output of PPM activities at SMK Negeri 2 Pakem. I contributed to designing and creating the entire game system using the Unity game engine, with other team members supplying game assets.', '2nd Semester, 2023', 'Designed and created the entire game system using the Unity game engine.', [{ name: 'Google Drive', url: 'https://drive.google.com/drive/folders/1AHcx-PG9zbxuQDjZl-7TZxqqKWP-BDHK?usp=sharing' }], [ProjectType.GAME, ProjectType.MOBILE_APP], ['Unity', 'C#']),
+            new Project('p2', ['https://azisrosyid.github.io/portfolio/images/project2.png'], 'E-Mathematics Aptitude Test (2nd Semester)', 'A website used to conduct mathematics tests for students as the output of a client\'s dissertation. I was responsible for configuring the entire back-end, including the database, using the CodeIgniter 4 framework.', '2nd Semester, 2023', 'Configured the entire back-end, including the database, using the CodeIgniter 4 framework.', [{ name: 'GitHub', url: 'https://github.com/AzisRosyid/cbt-project' }], [ProjectType.WEB_APP, ProjectType.BACKEND], ['CodeIgniter 4', 'PHP', 'MySQL', 'JavaScript']),
+            new Project('p3', ['https://azisrosyid.github.io/portfolio/images/project3.png'], 'Panenku Indonesia (3rd Semester)', 'A website used to facilitate partnership transactions in oyster mushroom cultivation as the output of a client\'s PKM project. I contributed to configuring the back-end for the main features, namely partnership transactions and the dashboard, as well as configuring the website database and web server management.', '3rd Semester, 2023', 'Configured the back-end (transactions, dashboard), database, and web server management.', [{ name: 'Website', url: 'https://panenkuindonesia.com/' }], [ProjectType.WEB_APP, ProjectType.BACKEND], ['Laravel', 'PHP', 'MySQL', 'Bootstrap']),
+            new Project('p4', ['https://azisrosyid.github.io/portfolio/images/project4.png'], 'Edu MIT (3rd Semester)', 'A mobile application on the Android platform used to educate the public on Mount Merapi disaster mitigation. I was responsible for leading the project and handling the entire mobile application using Flutter. Design and assets were handled by team members.', '3rd Semester, 2023', 'Led the project and developed the mobile application using Flutter.', [{ name: 'Google Play', url: 'https://play.google.com/store/apps/details?id=com.edumit.app_mitigasi_bencana' }], [ProjectType.MOBILE_APP], ['Flutter', 'Dart']),
+            new Project('p5', ['https://azisrosyid.github.io/portfolio/images/project5.png'], 'Qwhizy (3rd Semester)', 'A mobile application on the Android platform used to assist with Al-Quran memorization. This application project was created for a client\'s competition and successfully won 2nd place. I contributed to the entire mobile application development using Flutter and created the login and register API using the Laravel framework.', '3rd Semester, 2023', 'Mobile application development (Flutter) and API (Laravel).', [{ name: 'Google Play', url: 'https://play.google.com/store/apps/details?id=com.qwhizy.mdaq' }], [ProjectType.MOBILE_APP, ProjectType.BACKEND], ['Flutter', 'Dart', 'Laravel', 'PHP']),
+            new Project('p6', ['https://azisrosyid.github.io/portfolio/images/project6.png'], 'Toll Interchange-ED (3rd Semester)', 'A mobile application on the Android platform used to educate vocational high school students, especially in the DPIB field, on the material of designing curved geometry for toll road interchanges. I was responsible for developing the entire application using Flutter.', '3rd Semester, 2023', 'Developed the entire application using Flutter.', [], [ProjectType.MOBILE_APP], ['Flutter', 'Dart']),
+            new Project('p7', ['https://azisrosyid.github.io/portfolio/images/project7.png'], 'Royal Photoshare (4th Semester)', 'A mobile application on the Android platform used to help the "Royal Artwork" photography business improve convenience and efficiency. This application was designed exclusively for the "Royal Artwork Yogyakarta" photography business. In this project, I was responsible for the overall application development (UI and System) using Flutter.', '4th Semester, 2024', 'Overall application development (UI and System) using Flutter.', [], [ProjectType.MOBILE_APP], ['Flutter', 'Dart']),
+            new Project('p8', ['https://placehold.co/900x500/1f2937/ffffff?text=WalletWatch+UI'], 'Wallet Watch (PKM-KC 2024)', 'A mobile application to control the use of paylater by utilizing machine learning to help people be wiser and more aware in its use.', 'April - July 2024', 'As an AI Engineer, I developed the entire Wallet Watch mobile application using Flutter, designed, processed training data, and developed the Self-Discovery and Automatic Self-Control (Monitor) machine learning models. Additionally, I assisted in fine-tuning the ChatBot feature, and served as a Technician, System Developer, System Flowchart creator, and conducted System Testing.', [{ name: 'Google Play', url: '#' }], [ProjectType.MOBILE_APP, ProjectType.AI, ProjectType.BACKEND], ['Flutter', 'Dart', 'Python', 'Scikit-learn', 'Laravel', 'PHP', 'OpenAI API', 'Docker', 'Kubernetes'])
+        ];
+
+        const translations = {
+            en: {
+                nav_about: "About", nav_projects: "Projects", nav_contact: "Contact", language: "Language",
+                about_title: "About Me", about_p1: "Hi, my name is Azis Rosyid. Dedicated student with a passion for technology, particularly in the realm of software engineering. Demonstrated expertise and hands-on experience in leveraging technology to solve complex problems.", about_p2: "Like to participating in scientific writing competitions, showcasing a strong commitment to academic and intellectual pursuits. Eager to contribute technical skills and innovative thinking to a dynamic team or project. Aspiring professional with a keen interest in staying at the forefront of technological advancements.", about_p3: "Let's embark on a journey to create exceptional software that not only meets but exceeds expectations. I'm excited to bring my skills and enthusiasm to your next project!",
+                projects_title: "Projects", contact_title: "Contact Me",
+                form_name: "Name", form_email: "Email", form_message: "Message", form_send: "Send Message",
+                project_button: "View Details", search_placeholder: "Search projects...", filter_all: "All Types",
+                sort_period_desc: "Period (Newest)", sort_period_asc: "Period (Oldest)", sort_name_az: "Name (A-Z)", sort_name_za: "Name (Z-A)",
+                no_projects_found: "No projects found matching your criteria.",
+                back_to_projects: "Back to Projects", detail_type: "Type", detail_skills: "Skills", detail_period: "Project Period", detail_contribution: "My Contribution", detail_description: "Description", detail_assets: "Project Assets"
+            },
+            id: {
+                nav_about: "Tentang", nav_projects: "Proyek", nav_contact: "Kontak", language: "Bahasa",
+                about_title: "Tentang Saya", about_p1: "Hai, nama saya Azis Rosyid. Mahasiswa yang berdedikasi dengan hasrat terhadap teknologi, khususnya di bidang rekayasa perangkat lunak. Menunjukkan keahlian dan pengalaman langsung dalam memanfaatkan teknologi untuk memecahkan masalah yang kompleks.", about_p2: "Suka berpartisipasi dalam kompetisi penulisan ilmiah, menunjukkan komitmen yang kuat terhadap pengejaran akademis dan intelektual. Bersemangat untuk menyumbangkan keterampilan teknis dan pemikiran inovatif ke tim atau proyek yang dinamis. Profesional yang bercita-cita tinggi dengan minat yang besar untuk tetap menjadi yang terdepan dalam kemajuan teknologi.", about_p3: "Mari kita memulai perjalanan untuk menciptakan perangkat lunak luar biasa yang tidak hanya memenuhi tetapi melampaui harapan. Saya bersemangat untuk membawa keterampilan dan antusiasme saya ke proyek Anda berikutnya!",
+                projects_title: "Proyek", contact_title: "Hubungi Saya",
+                form_name: "Nama", form_email: "Email", form_message: "Pesan", form_send: "Kirim Pesan",
+                project_button: "Lihat Detail", search_placeholder: "Cari proyek...", filter_all: "Semua Tipe",
+                sort_period_desc: "Periode (Terbaru)", sort_period_asc: "Periode (Terlama)", sort_name_az: "Nama (A-Z)", sort_name_za: "Nama (Z-A)",
+                no_projects_found: "Tidak ada proyek yang cocok dengan kriteria Anda.",
+                back_to_projects: "Kembali ke Proyek", detail_type: "Tipe", detail_skills: "Keahlian", detail_period: "Periode Proyek", detail_contribution: "Kontribusi Saya", detail_description: "Deskripsi", detail_assets: "Aset Proyek"
+            }
+        };
+
+        // =================================================================
+        // Main script logic
+        // =================================================================
+
+        let currentLang = 'id';
+        let currentlyViewedProjectId = null;
+        let carouselInterval;
+
+        function smoothScroll(targetId) {
+            const target = document.getElementById(targetId);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            document.querySelectorAll('[data-lang-key]').forEach(elem => {
+                const key = elem.getAttribute('data-lang-key');
+                if (translations[lang]?.[key]) elem.innerText = translations[lang][key];
+            });
+            document.querySelectorAll('[data-lang-placeholder]').forEach(elem => {
+                const key = elem.getAttribute('data-lang-placeholder');
+                if (translations[lang]?.[key]) elem.placeholder = translations[lang][key];
+            });
+            populateFilterAndSortOptions(lang);
+            applyFiltersAndSort();
+
+            if (currentlyViewedProjectId) {
+                const projectData = lang === 'id' ? projectsData_id : projectsData_en;
+                const project = projectData.find(p => p.id === currentlyViewedProjectId);
+                if (project) renderProjectDetails(project);
+            }
+        }
+
+        function renderProjects(projectsToRender) {
+            const grid = document.getElementById('projects-grid');
+            const msg = document.getElementById('no-projects-message');
+            if (!grid || !msg) return;
+            grid.innerHTML = '';
+            msg.classList.toggle('hidden', projectsToRender.length > 0);
+
+            const btnText = translations[currentLang].project_button;
+            projectsToRender.forEach(p => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full transform hover:scale-105 transition-transform duration-300">
+                        <img src="${p.imageUrls[0]}" class="w-full h-48 object-cover" alt="${p.title} Image">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="text-xl font-semibold mb-2 text-gray-900">${p.title}</h3>
+                            <p class="text-gray-600 text-base mb-4 flex-grow">${p.description.substring(0, 100)}...</p>
+                            <button onclick="showProjectDetails('${p.id}')" class="bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 transition-colors mt-auto text-center inline-block">${btnText}</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function parsePeriod(periodString) {
+            const parts = periodString.split(',');
+            if (parts.length < 2) return { year: 0, semester: 0 }; // Handle cases like "April - Juli 2024"
+            const yearPart = parts.find(part => /\d{4}/.test(part));
+            const semesterPart = parts.find(part => /semester/i.test(part));
+
+            const year = yearPart ? parseInt(yearPart.trim(), 10) : 0;
+            const semester = semesterPart ? parseInt(semesterPart.replace(/[^0-9]/g, ''), 10) : 0;
+
+            return { year, semester };
+        }
+
+        function applyFiltersAndSort() {
+            const data = currentLang === 'id' ? projectsData_id : projectsData_en;
+            const term = document.getElementById('search-bar').value.toLowerCase();
+            const type = document.getElementById('filter-select').value;
+            const sort = document.getElementById('sort-select').value;
+
+            let results = data.filter(p =>
+                (p.title.toLowerCase().includes(term) || p.description.toLowerCase().includes(term)) &&
+                (type === 'all' || p.types.includes(type))
+            );
+
+            results.sort((a, b) => {
+                switch (sort) {
+                    case 'period_desc':
+                        const periodA = parsePeriod(a.period);
+                        const periodB = parsePeriod(b.period);
+                        if (periodB.year !== periodA.year) return periodB.year - periodA.year;
+                        return periodB.semester - periodA.semester;
+                    case 'period_asc':
+                        const periodA_asc = parsePeriod(a.period);
+                        const periodB_asc = parsePeriod(b.period);
+                        if (periodA_asc.year !== periodB_asc.year) return periodA_asc.year - periodB_asc.year;
+                        return periodA_asc.semester - periodB_asc.semester;
+                    case 'name_az':
+                        return a.title.localeCompare(b.title);
+                    case 'name_za':
+                        return b.title.localeCompare(a.title);
+                    default:
+                        return 0;
+                }
+            });
+
+            renderProjects(results);
+        }
+
+        function populateFilterAndSortOptions(lang) {
+            const filterSelect = document.getElementById('filter-select');
+            const sortSelect = document.getElementById('sort-select');
+
+            filterSelect.innerHTML = `<option value="all">${translations[lang].filter_all}</option>`;
+            Object.values(ProjectType).forEach(type => filterSelect.innerHTML += `<option value="${type}">${type}</option>`);
+
+            sortSelect.innerHTML = `
+                <option value="period_desc">${translations[lang].sort_period_desc}</option>
+                <option value="period_asc">${translations[lang].sort_period_asc}</option>
+                <option value="name_az">${translations[lang].sort_name_az}</option>
+                <option value="name_za">${translations[lang].sort_name_za}</option>
+            `;
+        }
+
+        function showMainContent() {
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('project-detail').classList.add('hidden');
+            currentlyViewedProjectId = null;
+            if (carouselInterval) clearInterval(carouselInterval);
+            window.scrollTo(0, 0);
+        }
+
+        function showProjectDetails(projectId) {
+            currentlyViewedProjectId = projectId;
+            const projectData = currentLang === 'id' ? projectsData_id : projectsData_en;
+            const project = projectData.find(p => p.id === projectId);
+            if (project) {
+                document.getElementById('main-content').classList.add('hidden');
+                document.getElementById('project-detail').classList.remove('hidden');
+                renderProjectDetails(project);
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function renderProjectDetails(project) {
+            document.getElementById('detail-title').innerText = project.title;
+            document.getElementById('detail-period').innerText = project.period;
+            document.getElementById('detail-contribution').innerText = project.contribution;
+            document.getElementById('detail-description').innerText = project.description;
+
+            const typesContainer = document.getElementById('detail-types');
+            typesContainer.innerHTML = '';
+            project.types.forEach(type => {
+                typesContainer.innerHTML += `<span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">${type}</span>`;
+            });
+
+            const skillsContainer = document.getElementById('detail-skills');
+            skillsContainer.innerHTML = '';
+            project.skills.forEach(skill => {
+                skillsContainer.innerHTML += `<span class="bg-gray-200 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">${skill}</span>`;
+            });
+
+            const assetsContainer = document.getElementById('detail-assets');
+            assetsContainer.innerHTML = '';
+            project.assets.forEach(asset => {
+                assetsContainer.innerHTML += `<a href="${asset.url}" target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">${asset.name}</a>`;
+            });
+
+            initCarousel(project.imageUrls);
+        }
+
+        function initCarousel(imageUrls) {
+            const container = document.getElementById('carousel-container');
+            if (carouselInterval) clearInterval(carouselInterval);
+            container.innerHTML = '';
+
+            imageUrls.forEach((url, index) => {
+                container.innerHTML += `<div class="carousel-slide"><img src="${url}" alt="Project image ${index + 1}"></div>`;
+            });
+
+            if (imageUrls.length > 1) {
+                container.innerHTML += `
+                    <a class="carousel-prev">&#10094;</a>
+                    <a class="carousel-next">&#10095;</a>`;
+            }
+
+            let slideIndex = 0;
+            const slides = container.getElementsByClassName('carousel-slide');
+            if (slides.length === 0) return;
+
+            const showSlides = (n) => {
+                slideIndex = (n + slides.length) % slides.length;
+                Array.from(slides).forEach(slide => slide.style.display = "none");
+                slides[slideIndex].style.display = "block";
+            };
+
+            const plusSlides = (n) => showSlides(slideIndex += n);
+
+            const prevBtn = container.querySelector('.carousel-prev');
+            const nextBtn = container.querySelector('.carousel-next');
+            if (prevBtn && nextBtn) {
+                prevBtn.onclick = () => { plusSlides(-1); clearInterval(carouselInterval); };
+                nextBtn.onclick = () => { plusSlides(1); clearInterval(carouselInterval); };
+            }
+
+            showSlides(slideIndex);
+
+            if (imageUrls.length > 1) {
+                carouselInterval = setInterval(() => plusSlides(1), 3000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuButton = document.getElementById('menu-button');
+            const navbarNav = document.getElementById('navbarNav');
+            if (menuButton && navbarNav) menuButton.addEventListener('click', () => navbarNav.classList.toggle('hidden'));
+
+            ['search-bar', 'filter-select', 'sort-select'].forEach(id => {
+                document.getElementById(id).addEventListener(id === 'search-bar' ? 'input' : 'change', applyFiltersAndSort);
+            });
+
+            setLanguage(localStorage.getItem('language') || 'id');
+
+            const canvas = document.getElementById('canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const heightScale = 0.866;
+            function rnd(min, max) { return Math.floor((Math.random() * (max - min + 1)) + min); }
+            function updateCanvasSize() {
+                canvas.width = document.documentElement.clientWidth;
+                canvas.height = document.documentElement.clientHeight;
+            }
+            function renderCanvas() {
+                updateCanvasSize();
+                ctx.fillStyle = '#111827';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.lineWidth = 0;
+                const triSide = 40, halfSide = triSide / 2, rowHeight = Math.floor(triSide * heightScale);
+                const columns = Math.ceil(canvas.width / triSide) + 1, rows = Math.ceil(canvas.height / rowHeight);
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < columns; col++) {
+                        let x = col * triSide, y = row * rowHeight;
+                        if (row % 2 !== 0) x -= halfSide;
+                        let lightness = rnd(10, 25), clr = `hsl(0, 0%, ${lightness}%)`;
+                        ctx.fillStyle = clr;
+                        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + halfSide, y + rowHeight); ctx.lineTo(x - halfSide, y + rowHeight); ctx.closePath(); ctx.fill();
+                        lightness = rnd(10, 25); clr = `hsl(0, 0%, ${lightness}%)`;
+                        ctx.fillStyle = clr;
+                        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + triSide, y); ctx.lineTo(x + halfSide, y + rowHeight); ctx.closePath(); ctx.fill();
+                    }
+                }
+            }
+            renderCanvas();
+            window.addEventListener('resize', renderCanvas);
+        });
+    </script>
+</body>
+
 </html>
